@@ -9,33 +9,41 @@ import (
 
 var db *sql.DB
 
-func Setup() *sql.DB {
+func Setup() (*sql.DB, error) {
 	if db != nil {
-		return db
+		return db, nil
 	}
 
 	var err error
 	db, err = sql.Open("sqlite3", "todos.sqlite")
 	if err != nil {
-		fmt.Println("Could not connect to db", err)
+		return nil, fmt.Errorf("could not connect to db: %w", err)
 	}
+
 	err = db.Ping()
 	if err != nil {
-		fmt.Println("Could not ping db", err)
+		return nil, fmt.Errorf("could not ping db: %w", err)
 	}
-	return db
+
+	return db, nil
 }
 
 func MakeMigrations() error {
-	db := Setup()
+	db, err := Setup()
+	if err != nil {
+		return fmt.Errorf("failed to setup db: %w", err)
+	}
+
 	q := `CREATE TABLE IF NOT EXISTS todos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             todo VARCHAR(128) NULL,
             done boolean
          );`
-	_, err := db.Exec(q)
+
+	_, err = db.Exec(q)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create table: %w", err)
 	}
+
 	return nil
 }

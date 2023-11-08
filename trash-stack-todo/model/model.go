@@ -2,6 +2,7 @@ package model
 
 import (
 	"errors"
+	"fmt"
 )
 
 type Todo struct {
@@ -11,7 +12,10 @@ type Todo struct {
 }
 
 func (t *Todo) Create() error {
-	db := Setup()
+	db, err := Setup()
+	if err != nil {
+		return fmt.Errorf("failed to setup db: %w", err)
+	}
 	q := `INSERT INTO todos (Todo, Done) VALUES(?, ?)`
 	stmt, err := db.Prepare(q)
 	if err != nil {
@@ -29,15 +33,21 @@ func (t *Todo) Create() error {
 }
 
 func (t *Todo) Get() (Todo, error) {
-	db := Setup()
+	db, err := Setup()
+	if err != nil {
+		return Todo{}, fmt.Errorf("failed to setup db: %w", err)
+	}
 	q := `SELECT Id, Todo, Done FROM todos WHERE Id=?`
 	todo := Todo{}
-	err := db.QueryRow(q, t.Id).Scan(&todo.Id, &todo.Todo, &todo.Done)
+	err = db.QueryRow(q, t.Id).Scan(&todo.Id, &todo.Todo, &todo.Done)
 	return todo, err
 }
 
 func (t *Todo) GetAll() ([]Todo, error) {
-	db := Setup()
+	db, err := Setup()
+	if err != nil {
+		return []Todo{}, fmt.Errorf("failed to setup db: %w", err)
+	}
 	q := `SELECT Id, Todo, Done FROM todos`
 	rows, err := db.Query(q)
 	if err != nil {
@@ -57,7 +67,10 @@ func (t *Todo) GetAll() ([]Todo, error) {
 }
 
 func (t *Todo) Update() error {
-	db := Setup()
+	db, err := Setup()
+	if err != nil {
+		return fmt.Errorf("failed to setup db: %w", err)
+	}
 	q := `UPDATE todos set Todo=?, Done=? WHERE id=?`
 	stmt, err := db.Prepare(q)
 	if err != nil {
@@ -88,7 +101,10 @@ func (t *Todo) MarkDone() error {
 }
 
 func (t *Todo) Delete(id uint64) error {
-	db := Setup()
+	db, err := Setup()
+	if err != nil {
+		return fmt.Errorf("failed to setup db: %w", err)
+	}
 	q := `DELETE FROM todos WHERE id=?`
 	stmt, err := db.Prepare(q)
 	if err != nil {
