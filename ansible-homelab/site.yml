@@ -1,0 +1,22 @@
+---
+# This playbook deploys the whole homelab stack in this server.
+- name: Check and boostrap in all nodes
+  hosts: all
+  remote_user: "{{ remote_user }}"
+  gather_facts: false
+  become: true
+  roles:
+    - bootstrap
+
+- name: Apply common configuration to all nodes
+  hosts: all
+  remote_user: "{{ remote_user }}"
+  become: true
+  roles:
+    - common
+
+- name: Set up basic services in server
+  hosts: all
+  remote_user: "{{ remote_user }}"
+  roles:
+    - homelab

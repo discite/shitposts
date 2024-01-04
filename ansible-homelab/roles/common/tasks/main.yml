@@ -1,0 +1,30 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+
+- name: Copy repositories from file
+  ansible.builtin.copy:
+    src: repositories
+    dest: /etc/apk/repositories
+    mode: "0644"
+
+- name: Update all installed packages to the latest version
+  community.general.apk:
+    upgrade: true
+    update_cache: true
+
+- name: Install the packages "docker" and "docker-compose" as well powertop
+  community.general.apk:
+    name: docker,docker-compose,powertop
+    state: present
+
+- name: Add remote user to "docker" group
+  ansible.builtin.user:
+    name: "{{ remote_user }}"
+    groups: "{{ docker_group }}"
+    append: true
+
+- name: Enable service docker, and ensure it is running
+  ansible.builtin.service:
+    name: docker
+    enabled: true
+    state: started

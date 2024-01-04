@@ -1,0 +1,7 @@
+---
+# Variables listed here are applicable to all host groups
+ansible_python_interpreter: "/usr/bin/env python"
+ansible_become_method: doas
+remote_user: #YOURUSERHERE
+docker_group: docker
+ansible_become_password: #YOURPASSWORDHERE
