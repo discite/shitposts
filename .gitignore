@@ -1,2 +1,4 @@
 go-htmx-counter/go-htmx-counter
 *.sqlite
+ansible-homelab/group_vars/all
+ansible-homelab/hosts
